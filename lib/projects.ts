@@ -1,13 +1,44 @@
 import { Project, fetchData } from "oss-directory";
+import hmacSha256 from "crypto-js/hmac-sha256";
 
-export async function getProjects() {
+import { ProjectInfo } from "./types";
+
+const bannedProjects = [
+	""
+];
+
+export async function getProjects(): Promise<ProjectInfo[]> {
 	const data = await fetchData();
 	const rawProjects: Project[] = data.projects;
 	const filteredProjects = rawProjects.filter((p) => Boolean(p.websites) && (p.websites?.length ?? 0) > 0);
 	const activeProjects = filteredProjects.filter((p) => !p.description?.includes("Discontinued"));
 
 	const projects = activeProjects;
-	return shuffle(projects, projects.length);
+	const shuffledProjects = shuffle(projects, projects.length);
+
+	const projectInfos = shuffledProjects.map((p) => {
+		const url = p.websites?.[0].url!;
+		const params = new URLSearchParams();
+		params.set("url", url);
+		params.set("block_ads", "true");
+		params.set("hide_cookie_banners", "true");
+		params.set("wait_until", "mostrequestsfinished");
+		params.set("fail_on_4xx", "true");
+		params.set("fail_on_5xx", "true");
+
+		// const options = `url=${p.url}&width=600&height=400`;
+		const secretKey = process.env.URLBOX_SECRET_KEY!;
+		const token = hmacSha256(params.toString(), secretKey).toString();
+		const urlbox = buildUrlboxUrl(token, params.toString());
+		return {
+			id: p.name,
+			title: p.display_name,
+			url: url,
+			urlbox: urlbox
+		};
+	});
+
+	return projectInfos;
 }
 
 function shuffle(array: Project[], k: number): Project[] {
@@ -28,3 +59,7 @@ function shuffle(array: Project[], k: number): Project[] {
 	return sample.slice(0, n);
 }
 
+function buildUrlboxUrl(token: string, params: string): string {
+	const public_key = process.env.URLBOX_PUBLIC_KEY!;
+	return `https://api.urlbox.com/v1/${public_key}/${token}/avif?${params}`;
+}
