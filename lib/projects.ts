@@ -4,13 +4,14 @@ import hmacSha256 from "crypto-js/hmac-sha256";
 import { ProjectInfo } from "./types";
 
 const bannedProjects = [
-	""
+	"wannabet-cc", // Client-side error.
 ];
 
 export async function getProjects(): Promise<ProjectInfo[]> {
 	const data = await fetchData();
 	const rawProjects: Project[] = data.projects;
-	const filteredProjects = rawProjects.filter((p) => Boolean(p.websites) && (p.websites?.length ?? 0) > 0);
+	const notBannedProjects = rawProjects.filter((p) => !bannedProjects.includes(p.name));
+	const filteredProjects = notBannedProjects.filter((p) => Boolean(p.websites) && (p.websites?.length ?? 0) > 0);
 	const activeProjects = filteredProjects.filter((p) => !p.description?.includes("Discontinued"));
 
 	const projects = activeProjects;
