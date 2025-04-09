@@ -11,6 +11,7 @@
     "@vercel/speed-insights": "^1.0.9",
     "clsx": "^2.1.1",
     "next": "15.3.0-canary.19",
+    "oss-directory": "^0.1.0",
     "react": "0.0.0-experimental-e1e74071-20250321",
     "react-dom": "0.0.0-experimental-e1e74071-20250321"
   },
