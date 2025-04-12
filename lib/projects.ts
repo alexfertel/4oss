@@ -7,7 +7,7 @@ const bannedProjects = [
 	"wannabet-cc", // Client-side error.
 ];
 
-export async function getProjects(): Promise<ProjectInfo[]> {
+export async function getProjects(deviceType: "mobile" | "desktop"): Promise<ProjectInfo[]> {
 	const data = await fetchData();
 	const rawProjects: Project[] = data.projects;
 	const notBannedProjects = rawProjects.filter((p) => !bannedProjects.includes(p.name));
@@ -27,7 +27,12 @@ export async function getProjects(): Promise<ProjectInfo[]> {
 		params.set("fail_on_4xx", "true");
 		params.set("fail_on_5xx", "true");
 
-		// const options = `url=${p.url}&width=600&height=400`;
+		if (deviceType == "mobile") {
+			params.set("width", "390");
+			params.set("height", "844");
+			params.set("thumb_width", "200");
+		}
+
 		const secretKey = process.env.URLBOX_SECRET_KEY!;
 		const token = hmacSha256(params.toString(), secretKey).toString();
 		const urlbox = buildUrlboxUrl(token, params.toString());

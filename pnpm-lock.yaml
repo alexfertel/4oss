@@ -23,6 +23,9 @@ importers:
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
+      motion:
+        specifier: ^12.6.3
+        version: 12.6.3(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321)
       next:
         specifier: 15.3.0-canary.19
         version: 15.3.0-canary.19(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321)
@@ -984,6 +987,20 @@ packages:
   fp-ts@1.19.3:
     resolution: {integrity: sha512-H5KQDspykdHuztLTg+ajGN0Z2qUjcEf3Ybxc6hLt0k7/zPkn29XnKnxlBPyW2XIddWrGaJBzBl4VLYOtk39yZg==}
 
+  framer-motion@12.6.3:
+    resolution: {integrity: sha512-2hsqknz23aloK85bzMc9nSR2/JP+fValQ459ZTVElFQ0xgwR2YqNjYSuDZdFBPOwVCt4Q9jgyTt6hg6sVOALzw==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fs-extra@0.30.0:
     resolution: {integrity: sha512-UvSPKyhMn6LEd/WpUaV9C9t3zATuqoqfWc3QdPhPLb58prN9tqYPlPWi8Krxi44loBoUzlobqZ3+8tGpxxSzwA==}
 
@@ -1293,6 +1310,26 @@ packages:
     resolution: {integrity: sha512-VZlYo/WE8t1tstuRmqgeyBgCbJc/lEdopaa+axcKzTBJ+UIdlAB9XnmvTCAH4pwR4ElNInaedhEBmZD8iCSVEg==}
     engines: {node: '>= 14.0.0'}
     hasBin: true
+
+  motion-dom@12.6.3:
+    resolution: {integrity: sha512-gRY08RjcnzgFYLemUZ1lo/e9RkBxR+6d4BRvoeZDSeArG4XQXERSPapKl3LNQRu22Sndjf1h+iavgY0O4NrYqA==}
+
+  motion-utils@12.6.3:
+    resolution: {integrity: sha512-R/b3Ia2VxtTNZ4LTEO5pKYau1OUNHOuUfxuP0WFCTDYdHkeTBR9UtxR1cc8mDmKr8PEhmmfnTKGz3rSMjNRoRg==}
+
+  motion@12.6.3:
+    resolution: {integrity: sha512-zw/vqUgv5F5m9fkvOl/eCv2AF1+tkeZl3fu2uIlisIaip8sm5e0CouAl6GkdiRoF+G7s29CjqMdIyPMirwUGHA==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -2826,6 +2863,15 @@ snapshots:
 
   fp-ts@1.19.3: {}
 
+  framer-motion@12.6.3(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321):
+    dependencies:
+      motion-dom: 12.6.3
+      motion-utils: 12.6.3
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 0.0.0-experimental-e1e74071-20250321
+      react-dom: 0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321)
+
   fs-extra@0.30.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -3181,6 +3227,20 @@ snapshots:
       yargs: 16.2.0
       yargs-parser: 20.2.9
       yargs-unparser: 2.0.0
+
+  motion-dom@12.6.3:
+    dependencies:
+      motion-utils: 12.6.3
+
+  motion-utils@12.6.3: {}
+
+  motion@12.6.3(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321):
+    dependencies:
+      framer-motion: 12.6.3(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321)
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 0.0.0-experimental-e1e74071-20250321
+      react-dom: 0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321)
 
   ms@2.1.3: {}
 
