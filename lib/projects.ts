@@ -5,6 +5,7 @@ import { ProjectInfo } from "./types";
 
 const bannedProjects = [
 	"wannabet-cc", // Client-side error.
+	"zkpod.ai", // Blank screen.
 ];
 
 export async function getProjects(deviceType: "mobile" | "desktop"): Promise<ProjectInfo[]> {
