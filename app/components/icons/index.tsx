@@ -8,9 +8,8 @@ export interface GalaxyIconProps extends IconProps {
   loading: boolean;
 }
 
-export function GalaxyIcon(props: GalaxyIconProps): JSX.Element {
-  const rotationTransition = { repeat: Infinity, duration: 2.5, ease: "linear" };
 
+export function GalaxyIcon(props: GalaxyIconProps): JSX.Element {
   return (
     props.loading ? <motion.svg
       xmlns="http://www.w3.org/2000/svg"
@@ -18,32 +17,26 @@ export function GalaxyIcon(props: GalaxyIconProps): JSX.Element {
       fill="none"
       stroke="currentColor"
       className={`${props.className}`}
+      initial={{ rotate: 0 }}
       animate={{ rotate: -360 }}
-      transition={rotationTransition}
-    // style={{ originX: '50%', originY: '50%' }}
+      transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
     >
-      <motion.g
-        animate={{ rotate: -360 }}
-        transition={rotationTransition}
-      // Ensure the rotation occurs around the element's center.
-      // style={{ originX: '50%', originY: '50%' }}
-      >
-        <rect
-          x="9.79"
-          y="10.55"
-          width="3.89"
-          height="3.89"
-          rx=".81"
-          ry=".81"
-          transform="translate(12.28 -4.63) rotate(45)"
-        />
-      </motion.g>
-      <circle cx="21.08" cy="18.68" r="1.08" />
-      <circle cx="11.73" cy="2.54" r="1.08" />
-      <circle cx="2.91" cy="17.12" r="1.08" />
-      <path strokeLinecap="round" d="M13.39,7.45c1.79-1.12,3.98-1.33,5.82-.35,2.72,1.45,3.71,4.98,2.38,8.11" />
-      <path strokeLinecap="round" d="M16.04,16.49c.08,2.08-.82,4.07-2.58,5.19-2.6,1.66-6.13.84-8.17-1.81" />
-      <path strokeLinecap="round" d="M6.61,14.16c-1.94-.76-3.41-2.37-3.74-4.43-.49-3.04,1.67-5.96,4.9-6.78" />
+      <motion.rect
+        initial={{ rotate: 0 }}
+        animate={{ rotate: -720 }}
+        transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+        x="9.76" y="9.76" width="4.49" height="4.49" rx=".78" ry=".78" transform="translate(12 -4.97) rotate(45)" />
+      <ellipse cx="12" cy="1.78" rx="1.25" ry="1.24" />
+      <circle cx="3.08" cy="17.15" r="1.25" />
+      <circle cx="20.92" cy="17.15" r="1.25" />
+      <path d="M19.78,16.76" />
+      <path d="M22.14,17.58" />
+      <path d="M21.15,13.58" />
+      <path d="M7.28,15.68" />
+      <path d="M13.67,6.57c.79-.34,1.67-.53,2.59-.53,3.6,0,6.51,2.92,6.51,6.51,0,.61-.08,1.21-.24,1.77" />
+      <path d="M6.18,14.32c-.98-.55-1.83-1.37-2.44-2.42-1.8-3.12-.73-7.1,2.38-8.9.87-.5,1.81-.78,2.75-.85" />
+      <path d="M16.57,16.04c-.14,2.1-1.29,4.09-3.24,5.22-2.88,1.66-6.49.88-8.45-1.71" />
+
     </motion.svg >
       :
       <motion.svg
@@ -53,28 +46,22 @@ export function GalaxyIcon(props: GalaxyIconProps): JSX.Element {
         stroke="currentColor"
         className={`${props.className}`}
       >
-        <motion.g
-          animate={{ rotate: 360 }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-        // Ensure the rotation occurs around the element's center.
-        // style={{ originX: '50%', originY: '50%' }}
-        >
-          <rect
-            x="9.79"
-            y="10.55"
-            width="3.89"
-            height="3.89"
-            rx=".81"
-            ry=".81"
-            transform="translate(12.28 -4.63) rotate(45)"
-          />
-        </motion.g>
-        <circle cx="21.08" cy="18.68" r="1.08" />
-        <circle cx="11.73" cy="2.54" r="1.08" />
-        <circle cx="2.91" cy="17.12" r="1.08" />
-        <path strokeLinecap="round" d="M13.39,7.45c1.79-1.12,3.98-1.33,5.82-.35,2.72,1.45,3.71,4.98,2.38,8.11" />
-        <path strokeLinecap="round" d="M16.04,16.49c.08,2.08-.82,4.07-2.58,5.19-2.6,1.66-6.13.84-8.17-1.81" />
-        <path strokeLinecap="round" d="M6.61,14.16c-1.94-.76-3.41-2.37-3.74-4.43-.49-3.04,1.67-5.96,4.9-6.78" />
+        <motion.rect
+          initial={{ rotate: 0 }}
+          animate={{ rotate: -360 }}
+          transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+          x="9.76" y="9.76" width="4.49" height="4.49" rx=".78" ry=".78" transform="translate(12 -4.97) rotate(45)" />
+        <ellipse cx="12" cy="1.78" rx="1.25" ry="1.24" />
+        <circle cx="3.08" cy="17.15" r="1.25" />
+        <circle cx="20.92" cy="17.15" r="1.25" />
+        <path d="M19.78,16.76" />
+        <path d="M22.14,17.58" />
+        <path d="M21.15,13.58" />
+        <path d="M7.28,15.68" />
+        <path d="M13.67,6.57c.79-.34,1.67-.53,2.59-.53,3.6,0,6.51,2.92,6.51,6.51,0,.61-.08,1.21-.24,1.77" />
+        <path d="M6.18,14.32c-.98-.55-1.83-1.37-2.44-2.42-1.8-3.12-.73-7.1,2.38-8.9.87-.5,1.81-.78,2.75-.85" />
+        <path d="M16.57,16.04c-.14,2.1-1.29,4.09-3.24,5.22-2.88,1.66-6.49.88-8.45-1.71" />
+
       </motion.svg>
   );
 }

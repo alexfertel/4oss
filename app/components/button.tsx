@@ -32,13 +32,14 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
         backdrop-blur-3xl
         ring-1 ring-white/40
         transition-all
-        duration-100
+        duration-500
         focus:outline-none
         focus:ring-2
         focus:ring-white/30
         active:scale-[0.98]
-        bg-white/30 hover:bg-white/20
-        text-[#ffc379]
+        bg-white/30 hover:bg-white/50
+        shadow-md shadow-zinc-200/20 hover:shadow-zinc-200/40
+        text-[#eeb06f]
         py-2
         px-3
         ${(disabled || loading) ? 'cursor-not-allowed' : 'cursor-pointer'}
@@ -46,7 +47,7 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
       `}
       {...rest}
     >
-      <GalaxyIcon loading={true} className='w-8 h-8 mr-2' />
+      <GalaxyIcon loading={loading} className='w-8 h-8 mr-2' />
       Explore
     </button>
   );

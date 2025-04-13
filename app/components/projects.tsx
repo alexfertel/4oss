@@ -49,10 +49,9 @@ export function Projects({ projects }: ProjectsParams) {
     // Prevent duplicate calls if loading.
     if (loading) return;
 
-    // If there's an error and there are already some loaded projects, move on to the next.
-    if (error && windowIdx < windowProjects.length - 1) {
+    // If there are already some loaded projects, move on to the next.
+    if (windowIdx < windowProjects.length - 1) {
       setWindowIdx(prev => prev + 1);
-      setError(false);
       return;
     }
 
