@@ -129,8 +129,8 @@ export function Projects({ projects }: ProjectsParams) {
         )}
         {!currentProject && !loading && error && <p>No projects available.</p>}
       </div>
-      <div className="flex mt-8 justify-center items-center">
-        <GlassmorphismButton onClick={handleExplore} loading={loading} />
+      <div className="flex justify-center items-center">
+        <GlassmorphismButton onClick={handleExplore} loading={loading} className="mt-16" />
       </div>
     </div>
   );

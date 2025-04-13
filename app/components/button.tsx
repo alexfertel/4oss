@@ -30,16 +30,16 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
         font-medium
         backdrop-filter
         backdrop-blur-3xl
-        ring-1 ring-white/40
+        ring-1 ring-[#faf0e0]/40
         transition-all
         duration-500
         focus:outline-none
         focus:ring-2
-        focus:ring-white/30
+        focus:ring-[#faf0e0]/30
         active:scale-[0.98]
-        bg-white/30 hover:bg-white/50
-        shadow-md shadow-zinc-200/20 hover:shadow-zinc-200/40
-        text-[#eeb06f]
+        bg-[#faf0e0]/30 hover:bg-[#faf0e0]/40
+        shadow-md shadow-[#003674]/20 hover:shadow-[#003674]/30
+        text-[#003674]
         py-2
         px-3
         ${(disabled || loading) ? 'cursor-not-allowed' : 'cursor-pointer'}

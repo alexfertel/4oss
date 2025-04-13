@@ -49,7 +49,7 @@ export default function RootLayout({
         mono.variable,
       )}
     >
-      <body className="relative antialiased bg-[#ffc379] flex flex-col flex-1">
+      <body className="relative antialiased bg-[#003674] flex flex-col flex-1">
         <main className="z-20 flex flex-col flex-1 items-center justify-between">
           {children}
           <Footer />
