@@ -24,7 +24,6 @@ const fetchProjectImage = async (project: ProjectInfo): Promise<string | null> =
 
 
 const WINDOW_SIZE = 3;
-const MAX_LOOKAHEAD = 10;
 
 type WindowProject = {
   project: ProjectInfo;
@@ -37,77 +36,124 @@ interface ProjectsParams {
 
 export function Projects({ projects }: ProjectsParams) {
   // Holds successfully loaded projects along with their object URL.
-  const [windowProjects, setWindowProjects] = React.useState<WindowProject[]>([]);
-  // Tracks the project to render from the window.
-  const [windowIdx, setWindowIdx] = React.useState(-1);
+  const [slidingWindow, setWindow] = React.useState<WindowProject[]>([]);
+
+  // Tracks the project to render from the slidingWindow.
+  const [[windowIdx, fresh], setWindowIdx] = React.useState([-1, true]);
+
   // Tracks the next project in the array to attempt loading.
-  const [nextIndex, setNextIndex] = React.useState(0);
+  const [projectIdx, setProjectIdx] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(false);
 
-  const handleExplore = () => {
-    // Prevent duplicate calls if loading.
-    if (loading) return;
+  React.useEffect(() => {
+    let isMounted = true;
+    async function initialFetch() {
+      if (projectIdx >= projects.length) {
+        return;
+      }
+      setLoading(true);
 
-    // If there are already some loaded projects, move on to the next.
-    if (windowIdx < windowProjects.length - 1) {
-      setWindowIdx(prev => prev + 1);
-      return;
-    }
+      let i = projectIdx;
+      for (; i < WINDOW_SIZE; i++) {
+        const project = projects[i];
+        fetchProjectImage(project)
+          .then(src => {
+            if (src === null) return;
 
-    // No more projects to fetch.
-    if (nextIndex >= projects.length) return;
-
-    setLoading(true);
-
-    // How many projects are needed to fill the window?
-    const alreadyInWindow = windowProjects.length - (windowIdx + 1);
-    const projectsNeeded = WINDOW_SIZE - alreadyInWindow;
-
-    // Define a batch from the next index up to the next MAX_LOOKAHEAD (but not beyond available projects)
-    const batchEnd = Math.min(projects.length, nextIndex + MAX_LOOKAHEAD);
-
-    // Launch fetches for the projects in the batch.
-    for (let i = nextIndex; i < batchEnd; i++) {
-      const project = projects[i];
-      fetchProjectImage(project)
-        .then(src => {
-          if (src !== null) {
-            // Immediately update the state when a project finishes fetching.
-            setWindowProjects(prev => {
+            setWindow(prev => {
               // Avoid duplicates by checking if this project is already in the list.
               if (!prev.some(item => item.project.url === project.url)) {
                 const updated = [...prev, { project, src }];
-                // If this is the first project loaded, set windowIdx to 0 to render it right away.
-                if (updated.length === 1 && windowIdx === -1) {
-                  setWindowIdx(0);
+
+                if (updated.length > 0 && windowIdx === -1) {
+                  setWindowIdx(prev => {
+                    if (prev[0] === -1) {
+                      return [0, prev[1]];
+                    }
+                  });
                 }
+
+                setLoading(false);
                 return updated;
               }
               return prev;
             });
-          }
-        })
-        .catch(err => {
-          console.error("Error fetching project image:", err);
-        });
+          });
+      }
     }
 
-    // Update pointer to skip over this batch.
-    setNextIndex(batchEnd);
-    setLoading(false);
-  };
+    initialFetch();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  // const currentProject = windowIdx >= 0 ? windowProjects[windowIdx] : undefined;
-  const currentProject = {
-    project: {
-      id: "avatar",
-      title: "avatar",
-      url: "https://avatars.githubusercontent.com/u/22298999?v=4",
-      urlbox: "https://avatars.githubusercontent.com/u/22298999?v=4",
-    },
-    src: "https://avatars.githubusercontent.com/u/22298999?v=4"
-  };
+  const handleExplore = React.useCallback(() => {
+    // Prevent duplicate calls if loading.
+    if (loading) return;
+
+    // If there are already some loaded projects, move on to the next.
+    if (windowIdx < slidingWindow.length - 1) {
+      setWindowIdx(([prev,]) => [prev + 1, true]);
+    } else {
+      setWindowIdx(([prev,]) => [prev, false]);
+    }
+
+    // No more projects to fetch.
+    if (projectIdx >= projects.length) return;
+
+    if (windowIdx == slidingWindow.length - 1) {
+      setLoading(true);
+    }
+
+    // How many projects are needed to fill the slidingWindow?
+    const alreadyInWindow = slidingWindow.length - (windowIdx + 1);
+    const projectsNeeded = WINDOW_SIZE - alreadyInWindow;
+    console.log("alreadyInWindow", alreadyInWindow, "projectsNeeded", projectsNeeded);
+
+    // Define a batch from the next index up to the next MAX_LOOKAHEAD (but not beyond available projects)
+    const batchEnd = Math.min(projects.length, projectIdx + projectsNeeded);
+
+    // Launch fetches for the projects in the batch.
+    for (let i = projectIdx; i < batchEnd; i++) {
+      const project = projects[i];
+      fetchProjectImage(project).then(src => {
+        if (src !== null) {
+          // Immediately update the state when a project finishes fetching.
+          setWindow(prev => {
+            if (prev.some(item => item.project.url === project.url)) {
+              return prev;
+            }
+
+            const updated = [...prev, { project, src }];
+            setLoading(false);
+            setWindowIdx(([prev, fresh]) => {
+              if (!fresh) {
+                return [prev + 1, true];
+              } else {
+                return [prev, false];
+              }
+            });
+
+            return updated;
+          });
+        }
+      });
+    }
+
+    setProjectIdx(batchEnd);
+  }, [loading, windowIdx, slidingWindow, projectIdx]);
+
+  const currentProject = windowIdx >= 0 ? slidingWindow[windowIdx] : undefined;
+  // const currentProject = {
+  //   project: {
+  //     id: "avatar",
+  //     title: "avatar",
+  //     url: "https://avatars.githubusercontent.com/u/22298999?v=4",
+  //     urlbox: "https://avatars.githubusercontent.com/u/22298999?v=4",
+  //   },
+  //   src: "https://avatars.githubusercontent.com/u/22298999?v=4"
+  // };
 
   return (
     <div className="text-zinc-100">
@@ -127,7 +173,7 @@ export function Projects({ projects }: ProjectsParams) {
             </a>
           </GlassmorphismCard>
         )}
-        {!currentProject && !loading && error && <p>No projects available.</p>}
+        {!currentProject && !loading && <p>No projects available.</p>}
       </div>
       <div className="flex justify-center items-center">
         <GlassmorphismButton onClick={handleExplore} loading={loading} className="mt-16" />
