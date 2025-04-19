@@ -42,7 +42,7 @@ export function Projects({ projects }: ProjectsParams) {
 
   return (
     <div className="text-zinc-100">
-      <div className="bg-transparent w-4xl">
+      <div className="bg-transparent">
         {currentProject !== undefined && (
           <GlassmorphismCard>
             <a
