@@ -10,15 +10,15 @@ import { mono, sans } from './_fonts'
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'rndr',
-    template: '%s | rndr',
+    default: '4oss',
+    template: '%s | 4oss',
   },
   description: 'Discover cool websites leveraging blockchain technology.',
   openGraph: {
-    title: 'rndr',
+    title: '4oss',
     description: 'Discover cool websites leveraging blockchain technology.',
     url: baseUrl,
-    siteName: 'rndr',
+    siteName: '4oss',
     locale: 'en_US',
     type: 'website',
   },
@@ -56,7 +56,7 @@ export default function RootLayout({
           <Analytics />
           <SpeedInsights />
         </main>
-        <div className='z-0 absolute inset-0 bg-[url(../public/rndr-background.png)] bg-center bg-no-repeat' />
+        <div className='z-0 absolute inset-0 bg-[url(../public/4oss-background.png)] bg-center bg-no-repeat' />
         <div className='z-10 absolute inset-0 background-pattern' />
       </body>
     </html>

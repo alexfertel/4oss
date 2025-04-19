@@ -4,7 +4,7 @@
 //       className="flex items-center transition-all hover:text-neutral-800"
 //       rel="noopener noreferrer"
 //       target="_blank"
-//       href="https://github.com/alexfertel/rndr"
+//       href="https://github.com/alexfertel/4oss"
 //     >
 //       <p className="ml-2 h-7">github</p>
 //     </a>
@@ -14,6 +14,7 @@
 export default function Footer() {
   return (
     <footer className="flex h-7">
+      Powered by Urlbox
     </footer>
   )
 }
