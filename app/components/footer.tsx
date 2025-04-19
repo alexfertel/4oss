@@ -12,9 +12,5 @@
 // </ul>
 
 export default function Footer() {
-  return (
-    <footer className="flex h-7">
-      Powered by Urlbox
-    </footer>
-  )
+  return <footer className="flex h-7">Powered by Urlbox</footer>;
 }

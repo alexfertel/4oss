@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { motion, Variants } from "motion/react"
+import { motion, Variants } from "motion/react";
 
 export function Loader({ className }: { className: string }) {
   const dotVariants: Variants = {
@@ -13,7 +13,7 @@ export function Loader({ className }: { className: string }) {
         ease: "easeInOut",
       },
     },
-  }
+  };
 
   return (
     <motion.div
@@ -35,7 +35,5 @@ export function Loader({ className }: { className: string }) {
         `}
       </style>
     </motion.div>
-  )
+  );
 }
-
-

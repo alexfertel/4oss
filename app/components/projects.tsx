@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React from "react";
 
 import { GlassmorphismCard } from "./card";
@@ -7,7 +7,9 @@ import { ProjectInfo } from "lib/types";
 import { GalaxyIcon } from "./icons";
 
 // Helper function to fetch binary data for a project's urlbox concurrently.
-const fetchProjectImage = async (project: ProjectInfo): Promise<string | null> => {
+const fetchProjectImage = async (
+  project: ProjectInfo,
+): Promise<string | null> => {
   try {
     const res = await fetch(project.urlbox);
     if (!res.ok) {
@@ -21,14 +23,12 @@ const fetchProjectImage = async (project: ProjectInfo): Promise<string | null> =
   }
 };
 
-
-
 interface ProjectsParams {
   projects: ProjectInfo[];
 }
 
 export function Projects({ projects }: ProjectsParams) {
-  let [loading, toggleLoading] = React.useReducer(prev => !prev, false);
+  let [loading, toggleLoading] = React.useReducer((prev) => !prev, false);
 
   const currentProject = {
     project: {
@@ -37,7 +37,7 @@ export function Projects({ projects }: ProjectsParams) {
       url: "https://avatars.githubusercontent.com/u/22298999?v=4",
       urlbox: "https://avatars.githubusercontent.com/u/22298999?v=4",
     },
-    src: "https://avatars.githubusercontent.com/u/22298999?v=4"
+    src: "https://avatars.githubusercontent.com/u/22298999?v=4",
   };
 
   return (
@@ -60,7 +60,11 @@ export function Projects({ projects }: ProjectsParams) {
         )}
       </div>
       <div className="flex justify-center items-center">
-        <GlassmorphismButton onClick={toggleLoading} loading={loading} className="mt-16" />
+        <GlassmorphismButton
+          onClick={toggleLoading}
+          loading={loading}
+          className="mt-16"
+        />
       </div>
     </div>
   );

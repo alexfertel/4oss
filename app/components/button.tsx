@@ -1,18 +1,19 @@
-import React, { ReactNode, ButtonHTMLAttributes } from 'react';
-import { GalaxyIcon } from './icons';
+import React, { ReactNode, ButtonHTMLAttributes } from "react";
+import { GalaxyIcon } from "./icons";
 
-interface GlassmorphismButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface GlassmorphismButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   loading?: boolean;
 }
 
 export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
   children,
-  className = '',
-  size = 'md',
-  type = 'button',
+  className = "",
+  size = "md",
+  type = "button",
   disabled = false,
   loading = false,
   ...rest
@@ -42,12 +43,12 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
         text-[#003674]
         py-2
         px-3
-        ${(disabled || loading) ? 'cursor-not-allowed' : 'cursor-pointer'}
+        ${disabled || loading ? "cursor-not-allowed" : "cursor-pointer"}
         ${className}
       `}
       {...rest}
     >
-      <GalaxyIcon loading={loading} className='w-8 h-8 mr-2' />
+      <GalaxyIcon loading={loading} className="w-8 h-8 mr-2" />
       Explore
     </button>
   );

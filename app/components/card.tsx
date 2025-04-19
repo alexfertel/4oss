@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import * as motion from "motion/react-client"
+import React, { ReactNode } from "react";
+import * as motion from "motion/react-client";
 
 interface GlassmorphismCardProps {
   children: ReactNode;
@@ -8,14 +8,13 @@ interface GlassmorphismCardProps {
 
 export const GlassmorphismCard: React.FC<GlassmorphismCardProps> = ({
   children,
-  className = '',
+  className = "",
 }) => {
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, }}
+      transition={{ duration: 0.4 }}
       className={`
         relative
         rounded-md
