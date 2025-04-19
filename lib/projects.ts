@@ -18,6 +18,8 @@ export async function getProjects(deviceType: "mobile" | "desktop"): Promise<Pro
 	const projects = activeProjects;
 	const shuffledProjects = shuffle(projects, projects.length);
 
+	// console.log(JSON.stringify(shuffledProjects, null, 2));
+
 	const projectInfos = shuffledProjects.map((p) => {
 		const url = p.websites?.[0].url!;
 		const params = new URLSearchParams();
@@ -45,7 +47,7 @@ export async function getProjects(deviceType: "mobile" | "desktop"): Promise<Pro
 		};
 	});
 
-	return projectInfos;
+	return [];
 }
 
 function shuffle(array: Project[], k: number): Project[] {
