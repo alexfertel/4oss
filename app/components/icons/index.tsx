@@ -1,5 +1,7 @@
 import { motion } from 'motion/react';
 
+import type { JSX } from "react";
+
 export interface IconProps {
   className?: string;
 }
