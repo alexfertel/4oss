@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 
-import { GlassmorphismCard } from "./card";
+import { Card } from "./card";
 import { GalaxyIcon } from "./icons";
 import { DeviceType, Project } from "lib/types";
 
@@ -30,6 +30,20 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
     setProject(initialProject);
   }, [initialProject]);
 
+  const width = deviceType === "desktop" ? 600 : 300;
+  const height = deviceType === "desktop" ? 400 : 700;
+  if (project === null && initialProject === null) {
+    return (
+      <div
+        className={`sm:p-4 flex items-center justify-center w-[${width}px] h-[${height}px]`}
+      >
+        <span>Loading website…</span>
+      </div>
+    );
+  }
+
+  const viewableProject = project ?? initialProject!;
+
   const loadNext = async () => {
     toggleLoading();
     try {
@@ -45,23 +59,23 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
   return (
     <React.Fragment>
       {/* Screenshot Container */}
-      {project !== null && (
-        <GlassmorphismCard className="bg-transparent">
+      {viewableProject !== null && (
+        <Card className="bg-transparent">
           <a
-            href={project.info?.url}
+            href={viewableProject.info?.url}
             target="_blank"
             rel="noopener noreferrer"
             className="sm:p-4 flex justify-center items-center group"
           >
             <img
-              src={project.src}
-              alt={project.info?.title ?? "Random website screenshot"}
-              width={deviceType === "desktop" ? 600 : 300}
-              height={deviceType === "desktop" ? 400 : 700}
+              src={viewableProject.src}
+              alt={viewableProject.info?.title ?? "Random website screenshot"}
+              width={width}
+              height={height}
               className="max-w-full h-auto transition duration-200 ease-in-out filter group-hover:blur-[1px]"
             />
           </a>
-        </GlassmorphismCard>
+        </Card>
       )}
 
       {/* Button */}

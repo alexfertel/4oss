@@ -52,7 +52,7 @@ export default function RootLayout({
           <Analytics />
           <SpeedInsights />
         </main>
-        <div className="z-0 absolute inset-0 bg-[url(../public/triangle-gradient-mobile.png)] md:bg-[url(../public/triangle-gradient-desktop.png)] bg-cover bg-center bg-no-repeat" />
+        <div className="z-0 absolute inset-0 bg-[url(../public/triangle-gradient-mobile.avif)] md:bg-[url(../public/triangle-gradient-desktop.avif)] bg-cover bg-center bg-no-repeat" />
         <div className="z-10 absolute inset-0 background-pattern" />
       </body>
     </html>

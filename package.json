@@ -11,10 +11,8 @@
     "@vercel/blob": "^1.0.0",
     "@vercel/speed-insights": "^1.0.9",
     "clsx": "^2.1.1",
-    "crypto-js": "^4.2.0",
     "motion": "^12.6.3",
     "next": "15.3.1",
-    "oss-directory": "^0.1.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },

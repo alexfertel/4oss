@@ -1,15 +1,12 @@
 import React, { ReactNode } from "react";
 import * as motion from "motion/react-client";
 
-interface GlassmorphismCardProps {
+interface CardProps {
   children: ReactNode;
   className?: string;
 }
 
-export const GlassmorphismCard: React.FC<GlassmorphismCardProps> = ({
-  children,
-  className = "",
-}) => {
+export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}

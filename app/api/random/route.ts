@@ -18,6 +18,8 @@ const banned = [
   "dappradar.com",
   "besmetaverse",
   "lumosdao",
+  "spreadsheet",
+  "t.me_",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
