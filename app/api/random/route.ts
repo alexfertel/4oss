@@ -5,20 +5,21 @@ import { projects } from "../../data/projects";
 export const runtime = "edge";
 
 /* ------------------------------------------------------------------ */
-/*  1. Load & cache projects *once*                                   */
+/*  Project map.                                                      */
 /* ------------------------------------------------------------------ */
 const bannedProjects = [
   "wannabet-cc",
   "zkpod.ai",
   "0xhoneyjar",
   "bridgers.xyz",
+  "https://x.com",
 ];
 
-async function loadProjects(): Promise<Record<string, ProjectInfo>> {
-  const rawProjects = projects as Project[];
+function loadProjects(): Record<string, ProjectInfo> {
+  const raw = projects as Project[];
   const map: Record<string, ProjectInfo> = {};
 
-  rawProjects
+  raw
     .filter((p) => !bannedProjects.includes(p.name))
     .filter((p) => p.websites?.length)
     .filter((p) => !p.description?.includes("Discontinued"))
@@ -31,10 +32,8 @@ async function loadProjects(): Promise<Record<string, ProjectInfo>> {
   return map;
 }
 
-const PROJECTS_PROMISE = loadProjects();
-
 /* ------------------------------------------------------------------ */
-/*  2. Screenshot blob pagination + cache                             */
+/*  Load **all** blobs once per variant.                              */
 /* ------------------------------------------------------------------ */
 type Variant = "desktop" | "mobile";
 
@@ -43,16 +42,18 @@ const PREFIX: Record<Variant, string> = {
   mobile: "mobile/",
 };
 
-const BATCH_SIZE = 100;
+const PAGE_LIMIT = 1000; // Bigger => fewer round‑trips.
 
-type CacheMap = Record<Variant, string[]>;
-type CursorMap = Partial<Record<Variant, string | null>>; // `null` ⇒ exhausted
+// In‑memory bags of URLs per variant. We *pop* from these until empty.
+const bags: Record<Variant, string[]> = { desktop: [], mobile: [] };
 
-const cache: CacheMap = { desktop: [], mobile: [] };
-const cursor: CursorMap = { desktop: undefined, mobile: undefined };
-const inflight: Partial<Record<Variant, Promise<void>>> = {};
+// A single module‑level promise per variant so concurrent cold‑starts
+// share the same list‑everything storm.
+const BAG_PROMISE: Record<Variant, Promise<void>> = {
+  desktop: loadAll("desktop"),
+  mobile: loadAll("mobile"),
+};
 
-/* ---------- Utils -------------------------------------------------- */
 function shuffle<T>(arr: T[]): void {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -60,41 +61,28 @@ function shuffle<T>(arr: T[]): void {
   }
 }
 
-/**
- * Try to fetch *one* additional page for the given variant.
- * If nothing new was fetched or the cursor is exhausted we simply return.
- * After every successful fetch the whole cache is reshuffled.
- */
-async function fetchNextBatch(variant: Variant): Promise<void> {
-  // Cursor === null  → we already fetched every page
-  if (cursor[variant] === null) return;
-  if (inflight[variant]) return inflight[variant]; // already running
+/** Crawl **all** pages for one variant and fill `bags[variant]`. */
+async function loadAll(variant: Variant): Promise<void> {
+  let cursor: string | undefined;
+  const urls: string[] = [];
 
-  const p = list({
-    limit: BATCH_SIZE,
-    prefix: PREFIX[variant],
-    // We know it's no longer null, so we can cast it.
-    cursor: cursor[variant] as string | undefined,
-  })
-    .then((response) => {
-      // When `response.cursor` is undefined, save `null` to mark exhaustion.
-      cursor[variant] = response.cursor ?? null;
-
-      if (response.blobs.length > 0) {
-        cache[variant].push(...response.blobs.map((b) => b.url));
-        shuffle(cache[variant]); // <— global reshuffle
-      }
-    })
-    .finally(() => {
-      inflight[variant] = undefined;
+  do {
+    const { blobs, cursor: next } = await list({
+      limit: PAGE_LIMIT,
+      prefix: PREFIX[variant],
+      cursor,
     });
+    urls.push(...blobs.map((b) => b.url));
+    cursor = next ?? undefined;
+  } while (cursor);
 
-  inflight[variant] = p;
-  return p;
+  shuffle(urls);
+  bags[variant] = urls;
+  console.log(`[${variant}] loaded ${urls.length} blobs`);
 }
 
 /* ------------------------------------------------------------------ */
-/*  3. Helper: derive project‑slug from blob URL                      */
+/*  Helpers                                                           */
 /* ------------------------------------------------------------------ */
 function slugFromBlob(url: string): string {
   return new URL(url).pathname // /desktop/acme‑tool.avif
@@ -103,57 +91,25 @@ function slugFromBlob(url: string): string {
 }
 
 /* ------------------------------------------------------------------ */
-/*  4. Route handler                                                  */
+/*  Route handler                                                     */
 /* ------------------------------------------------------------------ */
-const MAX_ATTEMPTS = 5;
-
-export async function GET(
-  request: Request,
-  ctx: { waitUntil?: (p: Promise<any>) => void } = {},
-): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const variant: Variant =
     searchParams.get("variant") === "mobile" ? "mobile" : "desktop";
 
-  const projectMap = await PROJECTS_PROMISE;
+  /* 1. Ensure the big list is loaded (cold‑start). */
+  await BAG_PROMISE[variant];
 
-  /* --------------------------------------------------------------
-   * Pop immediately, but schedule another fetch in the background.
-   * -------------------------------------------------------------- */
-  if (cache[variant].length === 0) {
-    // Need something to serve → block until we have at least one.
-    await fetchNextBatch(variant);
+  /* 2. Pop one URL; reshuffle when bag is empty.   */
+  if (bags[variant].length === 0) {
+    shuffle(bags[variant]); // Re‑mix the exhausted bag.
   }
+  const blobUrl = bags[variant].pop()!; // Guaranteed by initial load.
 
-  let blobUrl: string | undefined;
-  let project: ProjectInfo | undefined;
-  let attempts = 0;
+  /* 3. Map to project.                             */
+  const projectMap = loadProjects();
+  const project = projectMap[slugFromBlob(blobUrl)] ?? null;
 
-  while (attempts < MAX_ATTEMPTS) {
-    if (cache[variant].length === 0) {
-      // Maybe the first fetch returned zero items — try one last time.
-      await fetchNextBatch(variant);
-      if (cache[variant].length === 0) break;
-    }
-
-    blobUrl = cache[variant].pop()!;
-    project = projectMap[slugFromBlob(blobUrl)];
-    if (project) break;
-    attempts++;
-  }
-
-  /* ------------------------------------
-   * Background pre‑fetch (non‑blocking)
-   * ------------------------------------ */
-  if (cursor[variant] !== null) {
-    // Fire & forget; keep the function alive with waitUntil if available.
-    const prefetch = fetchNextBatch(variant);
-    ctx.waitUntil?.(prefetch);
-  }
-  console.log("cache size:", cache[variant].length);
-
-  return Response.json(
-    { variant, blobUrl: blobUrl ?? null, project: project ?? null },
-    { status: 200 },
-  );
+  return Response.json({ variant, blobUrl, project }, { status: 200 });
 }
