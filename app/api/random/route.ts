@@ -37,7 +37,7 @@ async function loadProjects(): Promise<Record<string, ProjectInfo>> {
 const PROJECTS_PROMISE = loadProjects(); // Fire‑and‑forget at module load.
 
 /* ------------------------------------------------------------------ */
-/*  2. Screenshot blob pagination + cache                              */
+/*  2. Screenshot blob pagination + cache                             */
 /* ------------------------------------------------------------------ */
 type Variant = "desktop" | "mobile";
 
@@ -84,7 +84,7 @@ async function fillCache(variant: Variant): Promise<void> {
 }
 
 /* ------------------------------------------------------------------ */
-/*  3. Helper: derive project‑slug from blob URL                       */
+/*  3. Helper: derive project‑slug from blob URL                      */
 /* ------------------------------------------------------------------ */
 function slugFromBlob(url: string): string {
   // https://<dom>/desktop/acme‑tool.avif → acme‑tool
@@ -94,42 +94,43 @@ function slugFromBlob(url: string): string {
 }
 
 /* ------------------------------------------------------------------ */
-/*  4. Route handler                                                   */
+/*  4. Route handler                                                  */
 /* ------------------------------------------------------------------ */
+const MAX_ATTEMPTS = 5; // arbitrary but sane upper bound
+
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const variant: Variant =
     searchParams.get("variant") === "mobile" ? "mobile" : "desktop";
 
-  // Ensure we have at least one blob URL ready.
-  if (cache[variant].length === 0) {
-    await fillCache(variant);
-    if (cache[variant].length === 0) {
-      return new Response("No screenshots found for this variant", {
-        status: 404,
-      });
-    }
-  }
-
-  const blobUrl = cache[variant].pop()!; // cache guaranteed non‑empty
-  const slug = slugFromBlob(blobUrl);
-
-  // projects were fetched at module load; wait for them if still resolving
   const projectMap = await PROJECTS_PROMISE;
-  const project = projectMap[slug];
 
-  if (!project) {
-    // screenshot exists but project metadata missing — shouldn’t happen,
-    // but we still respond gracefully
-    return Response.json({ variant, blobUrl, project: null }, { status: 200 });
+  let blobUrl: string | undefined;
+  let project: ProjectInfo | undefined;
+  let attempts = 0;
+
+  while (attempts < MAX_ATTEMPTS) {
+    // Make sure the cache isn't empty before we pop.
+    if (cache[variant].length === 0) {
+      await fillCache(variant);
+      if (cache[variant].length === 0) break; // nothing left to try
+    }
+
+    blobUrl = cache[variant].pop()!;
+    const slug = slugFromBlob(blobUrl);
+    project = projectMap[slug];
+
+    if (project) break; // success!
+    attempts++;
   }
 
-  return Response.json(
-    {
-      variant,
-      blobUrl,
-      project,
-    },
-    { status: 200 },
-  );
+  // If we still failed to match, respond exactly as before.
+  if (!project) {
+    return Response.json(
+      { variant, blobUrl: blobUrl ?? null, project: null },
+      { status: 200 },
+    );
+  }
+
+  return Response.json({ variant, blobUrl, project }, { status: 200 });
 }

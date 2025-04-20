@@ -55,8 +55,6 @@ export function Projects({ deviceType }: ProjectsProps) {
               width={1280}
               height={720}
               className="max-w-full h-auto"
-              decoding="async"
-              loading="lazy"
             />
           </a>
         </GlassmorphismCard>
