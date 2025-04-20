@@ -1,4 +1,4 @@
-import { fetchRandomScreenshot } from "./api/random/route";
+import { fetchRandomScreenshot } from "lib/random-screenshot";
 import { Projects } from "./components/projects";
 import { getDeviceType } from "lib/user-agent";
 
