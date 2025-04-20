@@ -7,20 +7,19 @@ export const runtime = "edge";
 /* ------------------------------------------------------------------ */
 /*  Project map.                                                      */
 /* ------------------------------------------------------------------ */
-const bannedProjects = [
+const bannedProjects = new Set([
   "wannabet-cc",
   "zkpod.ai",
   "0xhoneyjar",
   "bridgers.xyz",
-  "https://x.com",
-];
+  "https://x.com
+]);
 
-function loadProjects(): Record<string, ProjectInfo> {
-  const raw = projects as Project[];
+const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
   const map: Record<string, ProjectInfo> = {};
 
-  raw
-    .filter((p) => !bannedProjects.includes(p.name))
+  (projects as Project[])
+    .filter((p) => !bannedProjects.has(p.name))
     .filter((p) => p.websites?.length)
     .filter((p) => !p.description?.includes("Discontinued"))
     .forEach((p) => {
@@ -30,7 +29,7 @@ function loadProjects(): Record<string, ProjectInfo> {
     });
 
   return map;
-}
+})();
 
 /* ------------------------------------------------------------------ */
 /*  Load **all** blobs once per variant.                              */
@@ -108,8 +107,7 @@ export async function GET(request: Request): Promise<Response> {
   const blobUrl = bags[variant].pop()!; // Guaranteed by initial load.
 
   /* 3. Map to project.                             */
-  const projectMap = loadProjects();
-  const project = projectMap[slugFromBlob(blobUrl)] ?? null;
+  const project = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
 
   return Response.json({ variant, blobUrl, project }, { status: 200 });
 }
