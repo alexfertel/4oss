@@ -1,5 +1,7 @@
 export type Falsy = false | null | undefined;
 
+export type DeviceType = "desktop" | "mobile";
+
 export type ProjectInfo = {
   id: string;
   title: string;
@@ -7,6 +9,11 @@ export type ProjectInfo = {
 };
 
 export interface Project {
+  src: string;
+  info: ProjectInfo;
+}
+
+export interface RawProject {
   version: number;
   name: string;
   display_name: string;

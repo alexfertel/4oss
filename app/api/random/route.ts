@@ -1,5 +1,5 @@
 import { list } from "@vercel/blob";
-import type { Project, ProjectInfo } from "../../../lib/types";
+import type { DeviceType, RawProject, ProjectInfo } from "../../../lib/types";
 import { projects } from "../../data/projects";
 
 export const runtime = "edge";
@@ -7,20 +7,20 @@ export const runtime = "edge";
 /* ------------------------------------------------------------------ */
 /*  Project map.                                                      */
 /* ------------------------------------------------------------------ */
-const bannedProjects = new Set([
+const bannedProjects = [
   "wannabet-cc",
   "zkpod.ai",
   "0xhoneyjar",
   "bridgers.xyz",
-  "https://x.com
-]);
+  "https://x.com",
+];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
   const map: Record<string, ProjectInfo> = {};
 
-  (projects as Project[])
-    .filter((p) => !bannedProjects.has(p.name))
-    .filter((p) => p.websites?.length)
+  (projects as RawProject[])
+    .filter((p) => !bannedProjects.some((bp) => bp.includes(p.name)))
+    .filter((p) => (p.websites?.length ?? 0) > 0)
     .filter((p) => !p.description?.includes("Discontinued"))
     .forEach((p) => {
       const url = p.websites![0].url!;
@@ -32,23 +32,21 @@ const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
 })();
 
 /* ------------------------------------------------------------------ */
-/*  Load **all** blobs once per variant.                              */
+/*  Load **all** blobs once per deviceType.                              */
 /* ------------------------------------------------------------------ */
-type Variant = "desktop" | "mobile";
-
-const PREFIX: Record<Variant, string> = {
+const PREFIX: Record<DeviceType, string> = {
   desktop: "desktop/",
   mobile: "mobile/",
 };
 
 const PAGE_LIMIT = 1000; // Bigger => fewer round‑trips.
 
-// In‑memory bags of URLs per variant. We *pop* from these until empty.
-const bags: Record<Variant, string[]> = { desktop: [], mobile: [] };
+// In‑memory bags of URLs per deviceType. We *pop* from these until empty.
+const bags: Record<DeviceType, string[]> = { desktop: [], mobile: [] };
 
-// A single module‑level promise per variant so concurrent cold‑starts
+// A single module‑level promise per deviceType so concurrent cold‑starts
 // share the same list‑everything storm.
-const BAG_PROMISE: Record<Variant, Promise<void>> = {
+const BAG_PROMISE: Record<DeviceType, Promise<void>> = {
   desktop: loadAll("desktop"),
   mobile: loadAll("mobile"),
 };
@@ -60,15 +58,15 @@ function shuffle<T>(arr: T[]): void {
   }
 }
 
-/** Crawl **all** pages for one variant and fill `bags[variant]`. */
-async function loadAll(variant: Variant): Promise<void> {
+/* Crawl **all** pages for one deviceType and fill `bags[deviceType]`. */
+async function loadAll(deviceType: DeviceType): Promise<void> {
   let cursor: string | undefined;
   const urls: string[] = [];
 
   do {
     const { blobs, cursor: next } = await list({
       limit: PAGE_LIMIT,
-      prefix: PREFIX[variant],
+      prefix: PREFIX[deviceType],
       cursor,
     });
     urls.push(...blobs.map((b) => b.url));
@@ -76,8 +74,8 @@ async function loadAll(variant: Variant): Promise<void> {
   } while (cursor);
 
   shuffle(urls);
-  bags[variant] = urls;
-  console.log(`[${variant}] loaded ${urls.length} blobs`);
+  bags[deviceType] = urls;
+  console.log(`[${deviceType}] loaded ${urls.length} blobs`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -94,20 +92,20 @@ function slugFromBlob(url: string): string {
 /* ------------------------------------------------------------------ */
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
-  const variant: Variant =
-    searchParams.get("variant") === "mobile" ? "mobile" : "desktop";
+  const deviceType: DeviceType =
+    searchParams.get("deviceType") === "mobile" ? "mobile" : "desktop";
 
   /* 1. Ensure the big list is loaded (cold‑start). */
-  await BAG_PROMISE[variant];
+  await BAG_PROMISE[deviceType];
 
   /* 2. Pop one URL; reshuffle when bag is empty.   */
-  if (bags[variant].length === 0) {
-    shuffle(bags[variant]); // Re‑mix the exhausted bag.
+  if (bags[deviceType].length === 0) {
+    shuffle(bags[deviceType]); // Re‑mix the exhausted bag.
   }
-  const blobUrl = bags[variant].pop()!; // Guaranteed by initial load.
+  const blobUrl = bags[deviceType].pop()!; // Guaranteed by initial load.
 
   /* 3. Map to project.                             */
-  const project = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
-
-  return Response.json({ variant, blobUrl, project }, { status: 200 });
+  const info = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
+  const project = { src: blobUrl, info };
+  return Response.json({ deviceType, project }, { status: 200 });
 }
