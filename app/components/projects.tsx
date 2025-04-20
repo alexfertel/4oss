@@ -52,14 +52,14 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
             href={project.info?.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="sm:p-4 flex justify-center items-center"
+            className="sm:p-4 flex justify-center items-center group"
           >
             <img
               src={project.src}
               alt={project.info?.title ?? "Random website screenshot"}
               width={deviceType === "desktop" ? 600 : 300}
               height={deviceType === "desktop" ? 400 : 700}
-              className="max-w-full h-auto"
+              className="max-w-full h-auto transition duration-200 ease-in-out filter group-hover:blur-[1px]"
             />
           </a>
         </GlassmorphismCard>
