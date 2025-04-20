@@ -30,10 +30,10 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
         items-center
         justify-center
         rounded-md
-        font-medium
+        font-bold
         backdrop-filter
         backdrop-blur-3xl
-        ring-1 ring-[#faf0e0]/40
+        ring-1 ring-[#faf0e0]/80
         transition-all
         duration-500
         focus:outline-none
@@ -41,8 +41,7 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
         focus:ring-[#faf0e0]/30
         active:scale-[0.98]
         bg-[#faf0e0]/30 hover:bg-[#faf0e0]/40
-        shadow-md shadow-[#003674]/20 hover:shadow-[#003674]/30
-        text-[#003674]
+        text-zinc-500
         py-2
         px-3
         ${disabled || loading ? "cursor-not-allowed" : "cursor-pointer"}

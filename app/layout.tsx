@@ -45,14 +45,14 @@ export default function RootLayout({
       lang="en"
       className={clsx("text-black", sans.variable, mono.variable)}
     >
-      <body className="relative antialiased bg-[#003674] flex flex-col flex-1">
+      <body className="relative antialiased flex flex-col flex-1">
         <main className="z-20 flex flex-col flex-1 items-center justify-between">
           {children}
           <Footer />
           <Analytics />
           <SpeedInsights />
         </main>
-        <div className="z-0 absolute inset-0 bg-[url(../public/4oss-background.png)] bg-center bg-no-repeat" />
+        <div className="z-0 absolute inset-0 bg-[url(../public/triangle-gradient-mobile.png)] md:bg-[url(../public/triangle-gradient-desktop.png)] bg-cover bg-center bg-no-repeat" />
         <div className="z-10 absolute inset-0 background-pattern" />
       </body>
     </html>

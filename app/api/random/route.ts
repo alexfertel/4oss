@@ -7,20 +7,24 @@ export const runtime = "edge";
 /* ------------------------------------------------------------------ */
 /*  Project map.                                                      */
 /* ------------------------------------------------------------------ */
-const bannedProjects = [
+const banned = [
   "wannabet-cc",
   "zkpod.ai",
   "0xhoneyjar",
   "bridgers.xyz",
   "https://x.com",
+  "premia.blue",
+  "micro3.io",
+  "dappradar.com",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
   const map: Record<string, ProjectInfo> = {};
 
   (projects as RawProject[])
-    .filter((p) => !bannedProjects.some((bp) => bp.includes(p.name)))
     .filter((p) => (p.websites?.length ?? 0) > 0)
+    .filter((p) => !banned.some((bp) => bp.includes(p.name)))
+    .filter((p) => !banned.some((bp) => bp.includes(p.websites![0].url!)))
     .filter((p) => !p.description?.includes("Discontinued"))
     .forEach((p) => {
       const url = p.websites![0].url!;

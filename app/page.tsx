@@ -28,7 +28,7 @@ export default async function Page() {
   }
 
   return (
-    <section className="flex flex-col min-w-0 px-2 md:px-0 min-h-[calc(100dvh-28px)] items-center">
+    <section className="flex flex-col min-w-0 px-2 md:px-0 min-h-[calc(100dvh-40px)] items-center justify-center">
       <Projects deviceType={deviceType} initialProject={initialProject} />
     </section>
   );

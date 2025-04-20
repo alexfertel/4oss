@@ -7,17 +7,20 @@ export interface IconProps {
 }
 
 export interface GalaxyIconProps extends IconProps {
-  loading: boolean;
+  rotate?: boolean;
 }
 
-export function GalaxyIcon(props: GalaxyIconProps): JSX.Element {
-  return props.loading ? (
+export function GalaxyIcon({
+  className,
+  rotate = true,
+}: GalaxyIconProps): JSX.Element {
+  return rotate ? (
     <motion.svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      className={`${props.className}`}
+      className={`${className}`}
       initial={{ rotate: 0 }}
       animate={{ rotate: -360 }}
       transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
@@ -51,7 +54,7 @@ export function GalaxyIcon(props: GalaxyIconProps): JSX.Element {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      className={`${props.className}`}
+      className={`${className}`}
     >
       <motion.rect
         initial={{ rotate: 0 }}

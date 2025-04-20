@@ -1,16 +1,23 @@
-// <ul className="font-sm flex flex-col space-x-0 space-y-2 text-neutral-600 md:flex-row md:space-x-4 md:space-y-0">
-//   <li>
-//     <a
-//       className="flex items-center transition-all hover:text-neutral-800"
-//       rel="noopener noreferrer"
-//       target="_blank"
-//       href="https://github.com/alexfertel/4oss"
-//     >
-//       <p className="ml-2 h-7">github</p>
-//     </a>
-//   </li>
-// </ul>
-
 export default function Footer() {
-  return <footer className="flex h-7">Powered by Urlbox</footer>;
+  return (
+    <footer className="flex items-center justify-center text-center h-10 text-zinc-600">
+      <a
+        className="inline-block hover:underline"
+        href="https://urlbox.com/screenshot-api"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Powered by <span className="font-mono">Urlbox</span>
+      </a>
+      <span className="select-none">&thinsp;•&thinsp;</span>
+      <a
+        href="https://alexfertel.me"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block hover:underline transition-all duration-200"
+      >
+        Made by <span className="font-mono">alexfertel</span>
+      </a>
+    </footer>
+  );
 }

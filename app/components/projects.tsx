@@ -43,10 +43,8 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
     }
   };
 
-  console.log("device type", deviceType);
-
   return (
-    <div className="text-zinc-100 lg:mt-44 sm:mt-20 mt-8">
+    <React.Fragment>
       {/* Screenshot Container */}
       {project !== null && (
         <GlassmorphismCard className="bg-transparent">
@@ -54,13 +52,13 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
             href={project.info?.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 flex justify-center items-center"
+            className="sm:p-4 flex justify-center items-center"
           >
             <img
               src={project.src}
               alt={project.info?.title ?? "Random website screenshot"}
-              width={deviceType === "desktop" ? 800 : 300}
-              height={deviceType === "desktop" ? 600 : 700}
+              width={deviceType === "desktop" ? 600 : 300}
+              height={deviceType === "desktop" ? 400 : 700}
               className="max-w-full h-auto"
             />
           </a>
@@ -72,10 +70,10 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
         <GlassmorphismButton
           onClick={loadNext}
           loading={loading}
-          icon={<GalaxyIcon loading={loading} className="w-8 h-8 mr-2" />}
-          className="mt-10"
+          icon={<GalaxyIcon className="w-8 h-8 mr-2" />}
+          className="mt-16"
         />
       </div>
-    </div>
+    </React.Fragment>
   );
 }
