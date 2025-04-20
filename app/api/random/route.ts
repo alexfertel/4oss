@@ -1,5 +1,10 @@
 import { list } from "@vercel/blob";
-import type { DeviceType, RawProject, ProjectInfo } from "../../../lib/types";
+import type {
+  DeviceType,
+  RawProject,
+  ProjectInfo,
+  Project,
+} from "../../../lib/types";
 import { projects } from "../../data/projects";
 
 export const runtime = "edge";
@@ -98,11 +103,10 @@ function slugFromBlob(url: string): string {
 /* ------------------------------------------------------------------ */
 /*  Route handler                                                     */
 /* ------------------------------------------------------------------ */
-export async function GET(request: Request): Promise<Response> {
-  const { searchParams } = new URL(request.url);
-  const deviceType: DeviceType =
-    searchParams.get("deviceType") === "mobile" ? "mobile" : "desktop";
 
+export async function fetchRandomScreenshot(
+  deviceType: DeviceType,
+): Promise<Project> {
   /* 1. Ensure the big list is loaded (cold‑start). */
   await BAG_PROMISE[deviceType];
 
@@ -115,5 +119,15 @@ export async function GET(request: Request): Promise<Response> {
   /* 3. Map to project.                             */
   const info = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
   const project = { src: blobUrl, info };
+  return project;
+}
+
+export async function GET(request: Request): Promise<Response> {
+  const { searchParams } = new URL(request.url);
+  const deviceType: DeviceType =
+    searchParams.get("deviceType") === "mobile" ? "mobile" : "desktop";
+
+  const project = await fetchRandomScreenshot(deviceType);
+
   return Response.json({ deviceType, project }, { status: 200 });
 }
