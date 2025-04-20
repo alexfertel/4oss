@@ -1,13 +1,52 @@
 import { list } from "@vercel/blob";
+import type { Project, ProjectInfo } from "../../../lib/types";
+import { projects } from "../../data/projects";
 
-const BATCH_SIZE = 100;
+export const runtime = "edge";
 
+/* ------------------------------------------------------------------ */
+/*  1. Load & cache projects *once*                                   */
+/* ------------------------------------------------------------------ */
+// These are either broken or redirect to other things.
+const bannedProjects = ["wannabet-cc", "zkpod.ai", "0xhoneyjar"];
+
+async function loadProjects(): Promise<Record<string, ProjectInfo>> {
+  const rawProjects = projects as Project[];
+  const map: Record<string, ProjectInfo> = {};
+
+  rawProjects
+    .filter((p) => !bannedProjects.includes(p.name))
+    .filter((p) => p.websites?.length)
+    .filter((p) => !p.description?.includes("Discontinued"))
+    .forEach((p) => {
+      const url = p.websites![0].url!;
+      const safe = url
+        .replace("https://", "")
+        .replace("http://", "")
+        .replace("/", "_");
+      map[safe] = {
+        id: p.name,
+        title: p.display_name,
+        url,
+      };
+    });
+
+  return map;
+}
+
+const PROJECTS_PROMISE = loadProjects(); // Fire‑and‑forget at module load.
+
+/* ------------------------------------------------------------------ */
+/*  2. Screenshot blob pagination + cache                              */
+/* ------------------------------------------------------------------ */
 type Variant = "desktop" | "mobile";
 
 const PREFIX: Record<Variant, string> = {
   desktop: "desktop/",
   mobile: "mobile/",
 };
+
+const BATCH_SIZE = 10;
 
 type CacheMap = Record<Variant, string[]>;
 type CursorMap = Partial<Record<Variant, string | undefined>>;
@@ -23,10 +62,7 @@ function shuffle<T>(arr: T[]): void {
   }
 }
 
-/**
- * Ensures the cache for `variant` contains at least one URL,
- * fetching additional pages as necessary.
- */
+/** Fills the blob cache (paged) until at least one URL is present. */
 async function fillCache(variant: Variant): Promise<void> {
   while (cache[variant].length === 0) {
     const { blobs, cursor: next } = await list({
@@ -35,24 +71,37 @@ async function fillCache(variant: Variant): Promise<void> {
       cursor: cursor[variant],
     });
 
-    cursor[variant] = next; // undefined when no further pages exist
+    cursor[variant] = next; // undefined when no more pages
 
-    if (blobs.length) {
-      const urls = blobs.map((b) => b.url); // pathname + url fields confirmed in SDK response :contentReference[oaicite:0]{index=0}
+    if (blobs.length > 0) {
+      const urls = blobs.map((b) => b.url);
       shuffle(urls);
       cache[variant].push(...urls);
     }
 
-    // If we fetched an empty page and there’s nothing left, stop looping
-    if (!next) break;
+    if (!next) break; // exhausted pages
   }
 }
 
+/* ------------------------------------------------------------------ */
+/*  3. Helper: derive project‑slug from blob URL                       */
+/* ------------------------------------------------------------------ */
+function slugFromBlob(url: string): string {
+  // https://<dom>/desktop/acme‑tool.avif → acme‑tool
+  const pathname = new URL(url).pathname; // /desktop/acme‑tool.avif
+  const withNoPrefix = pathname?.replace(/^\/?[^/]+\/+/, "") ?? ""; // acme‑tool.avif
+  return withNoPrefix?.replace(/\.[^.]+$/, "") ?? ""; // acme‑tool
+}
+
+/* ------------------------------------------------------------------ */
+/*  4. Route handler                                                   */
+/* ------------------------------------------------------------------ */
 export async function GET(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const variant: Variant =
     searchParams.get("variant") === "mobile" ? "mobile" : "desktop";
 
+  // Ensure we have at least one blob URL ready.
   if (cache[variant].length === 0) {
     await fillCache(variant);
     if (cache[variant].length === 0) {
@@ -62,8 +111,25 @@ export async function GET(request: Request): Promise<Response> {
     }
   }
 
-  const url = cache[variant].pop() as string; // safe: cache has ≥1 item
-  return Response.redirect(url, 302);
-}
+  const blobUrl = cache[variant].pop()!; // cache guaranteed non‑empty
+  const slug = slugFromBlob(blobUrl);
 
-export const runtime = "edge";
+  // projects were fetched at module load; wait for them if still resolving
+  const projectMap = await PROJECTS_PROMISE;
+  const project = projectMap[slug];
+
+  if (!project) {
+    // screenshot exists but project metadata missing — shouldn’t happen,
+    // but we still respond gracefully
+    return Response.json({ variant, blobUrl, project: null }, { status: 200 });
+  }
+
+  return Response.json(
+    {
+      variant,
+      blobUrl,
+      project,
+    },
+    { status: 200 },
+  );
+}

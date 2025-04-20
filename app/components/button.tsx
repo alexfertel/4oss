@@ -7,6 +7,7 @@ interface GlassmorphismButtonProps
   className?: string;
   size?: "sm" | "md" | "lg";
   loading?: boolean;
+  icon: ReactNode;
 }
 
 export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
@@ -16,6 +17,7 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
   type = "button",
   disabled = false,
   loading = false,
+  icon = null,
   ...rest
 }) => {
   return (
@@ -48,7 +50,7 @@ export const GlassmorphismButton: React.FC<GlassmorphismButtonProps> = ({
       `}
       {...rest}
     >
-      <GalaxyIcon loading={loading} className="w-8 h-8 mr-2" />
+      {icon}
       Explore
     </button>
   );
