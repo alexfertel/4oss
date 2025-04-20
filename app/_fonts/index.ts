@@ -1,19 +1,13 @@
 import localFont from "next/font/local";
 
 export const sans = localFont({
-  src: './SpaceGrotesk-Variable.woff2',
+  src: "./Nexa-Book.woff2",
   preload: true,
-  variable: '--sans',
-})
-
-// export const serif = localFont({
-//   src: './_fonts/LoraItalicVariable.woff2',
-//   preload: true,
-//   variable: '--serif',
-// })
+  variable: "--sans",
+});
 
 export const mono = localFont({
-  src: './Berkeley Mono Variable R5ZXKZ4K.woff2',
+  src: "./Berkeley Mono Variable R5ZXKZ4K.woff2",
   preload: true,
-  variable: '--mono',
-})
+  variable: "--mono",
+});

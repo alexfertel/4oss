@@ -16,6 +16,8 @@ const banned = [
   "premia.blue",
   "micro3.io",
   "dappradar.com",
+  "besmetaverse",
+  "lumosdao",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
@@ -36,7 +38,7 @@ const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
 })();
 
 /* ------------------------------------------------------------------ */
-/*  Load **all** blobs once per deviceType.                              */
+/*  Load **all** blobs once per deviceType.                           */
 /* ------------------------------------------------------------------ */
 const PREFIX: Record<DeviceType, string> = {
   desktop: "desktop/",

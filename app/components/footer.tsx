@@ -7,7 +7,7 @@ export default function Footer() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        Powered by <span className="font-mono">Urlbox</span>
+        Powered by <span className="text-zinc-900">Urlbox</span>
       </a>
       <span className="select-none">&thinsp;•&thinsp;</span>
       <a
@@ -16,7 +16,7 @@ export default function Footer() {
         rel="noopener noreferrer"
         className="inline-block hover:underline transition-all duration-200"
       >
-        Made by <span className="font-mono">alexfertel</span>
+        Made by <span className="text-zinc-900">alexfertel</span>
       </a>
     </footer>
   );

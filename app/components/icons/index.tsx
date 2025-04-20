@@ -27,7 +27,7 @@ export function GalaxyIcon({
     >
       <motion.rect
         initial={{ rotate: 0 }}
-        animate={{ rotate: -720 }}
+        animate={{ rotate: 360 }}
         transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
         x="9.76"
         y="9.76"

@@ -2,7 +2,6 @@
 import * as React from "react";
 
 import { GlassmorphismCard } from "./card";
-import { GlassmorphismButton } from "./button";
 import { GalaxyIcon } from "./icons";
 import { DeviceType, Project } from "lib/types";
 
@@ -66,13 +65,22 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
       )}
 
       {/* Button */}
-      <div className="flex justify-center items-center">
-        <GlassmorphismButton
+      <div className="mt-16 flex flex-col justify-center items-center">
+        <button
           onClick={loadNext}
-          loading={loading}
-          icon={<GalaxyIcon className="w-8 h-8 mr-2" />}
-          className="mt-16"
-        />
+          className={`
+              relative
+              inline-flex
+              items-center
+              justify-center
+              transition-all
+              duration-300
+              hover:scale-[1.1]
+              ${loading ? "cursor-not-allowed" : "cursor-pointer"}
+          `}
+        >
+          <GalaxyIcon className="mt-4 w-9 h-9 text-zinc-700" />
+        </button>
       </div>
     </React.Fragment>
   );
