@@ -14,7 +14,7 @@ interface ProjectsProps {
 export async function fetchRandomScreenshot(
   deviceType: DeviceType,
 ): Promise<Project> {
-  const res = await fetch(`/api/random?variant=${deviceType}`, {
+  const res = await fetch(`/api/random?deviceType=${deviceType}`, {
     redirect: "follow", // Follow the 302 from the Edge function.
     cache: "no-store", // Force a fresh request every click.
   });
@@ -43,8 +43,10 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
     }
   };
 
+  console.log("device type", deviceType);
+
   return (
-    <div className="text-zinc-100">
+    <div className="text-zinc-100 lg:mt-44 sm:mt-20 mt-8">
       {/* Screenshot Container */}
       {project !== null && (
         <GlassmorphismCard className="bg-transparent">
@@ -57,8 +59,8 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
             <img
               src={project.src}
               alt={project.info?.title ?? "Random website screenshot"}
-              width={800}
-              height={600}
+              width={deviceType === "desktop" ? 800 : 300}
+              height={deviceType === "desktop" ? 600 : 700}
               className="max-w-full h-auto"
             />
           </a>
@@ -71,7 +73,7 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
           onClick={loadNext}
           loading={loading}
           icon={<GalaxyIcon loading={loading} className="w-8 h-8 mr-2" />}
-          className="mt-16"
+          className="mt-10"
         />
       </div>
     </div>
