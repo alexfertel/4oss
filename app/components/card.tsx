@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import * as motion from "motion/react-client";
 
 interface CardProps {
   children: ReactNode;
@@ -8,10 +7,7 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
+    <div
       className={`
         relative
         rounded-md
@@ -23,6 +19,6 @@ export const Card: React.FC<CardProps> = ({ children, className = "" }) => {
       `}
     >
       {children}
-    </motion.div>
+    </div>
   );
 };

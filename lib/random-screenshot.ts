@@ -23,6 +23,10 @@ const banned = [
   "moonbase.app",
   "nftearth.exchange",
   "ezkalibur",
+  "signupeoseos.com",
+  "degen.game",
+  "ipfs-search.com",
+  "alps.finance",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
@@ -93,24 +97,29 @@ async function loadAll(deviceType: DeviceType): Promise<void> {
 /*  Helpers                                                           */
 /* ------------------------------------------------------------------ */
 function slugFromBlob(url: string): string {
-  return new URL(url).pathname // /desktop/acme‑tool.avif
-    .replace(/^\/?[^/]+\/+/, "") // acme‑tool.avif
-    .replace(/\.[^.]+$/, ""); // acme‑tool
+  return (
+    new URL(url).pathname // /desktop/acme‑tool.avif
+      .replace(/^\/?[^/]+\/+/, "") // acme‑tool.avif
+      .replace(/\.[^.]+$/, "") // acme‑tool
+      // Remove `-mobile` suffix if present. This was added by us, so it's won't
+      // appear in projects loaded from the json file.
+      .replace("-mobile", "")
+  );
 }
 
 export async function fetchRandomScreenshot(
   deviceType: DeviceType,
 ): Promise<Project> {
-  /* 1. Ensure the big list is loaded (cold‑start). */
+  /* Ensure the big list is loaded (cold‑start). */
   await BAG_PROMISE[deviceType];
 
-  /* 2. Try up to 10 times (reshuffling if bag empties) until we get a non-null `info`. */
+  /* Try up to 10 times (reshuffling if bag empties) until we get a non-null `info`. */
   let project: Project;
   for (let attempt = 0; attempt < 10; attempt++) {
     if (bags[deviceType].length === 0) {
       shuffle(bags[deviceType]);
     }
-    const blobUrl = bags[deviceType].pop()!; // should always exist after loadAll
+    const blobUrl = bags[deviceType].pop()!; // Should always exist after loadAll.
     const info = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
     project = { src: blobUrl, info };
 

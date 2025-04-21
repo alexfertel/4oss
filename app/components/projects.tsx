@@ -28,12 +28,8 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
   const [loading, toggleLoading] = React.useReducer((prev) => !prev, false);
 
   if (project === null && initialProject === null) {
-    const className =
-      deviceType == "desktop"
-        ? "sm:p-4 flex items-center justify-center w-[600px] h-[400px]"
-        : "sm:p-4 flex items-center justify-center w-[300px] h-[700px]";
     return (
-      <div className={className}>
+      <div className="sm:p-4 flex items-center justify-center w-[250px] h-[600px] sm:w-[600px] sm:h-[400px]">
         <span>Loading website…</span>
       </div>
     );
@@ -68,30 +64,33 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
     }
   };
 
+  const className =
+    deviceType === "desktop"
+      ? "object-contain w-[300px] h-[240px] xs:w-[400px] xs:h-[320px] sm:w-[600px] sm:h-[480px]"
+      : "object-contain w-[200px] h-[432px] xs:w-[250px] xs:h-[541px] sm:w-[390px] sm:h-[844px]";
+
   return (
     <React.Fragment>
       {/* Screenshot Container */}
       {viewableProject !== null && (
-        <Card className="relative bg-transparent">
+        <Card className="relative flex bg-transparent">
           <a
             href={viewableProject.info?.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="sm:p-4 flex justify-center items-center cursor-alias"
+            className="sm:p-4 cursor-alias"
           >
             <img
               src={viewableProject.src}
               alt={viewableProject.info?.title ?? "Random website screenshot"}
-              width={deviceType === "desktop" ? 600 : 300}
-              height={deviceType === "desktop" ? 400 : 700}
-              className="max-w-full h-auto"
+              className={className}
             />
           </a>
         </Card>
       )}
 
       {/* Button */}
-      <div className="mt-18 flex flex-col justify-center items-center">
+      <div className="mt-8 xs:mt-12 sm:mt-18 flex flex-col justify-center items-center">
         <button
           onClick={loadNext}
           disabled={loading}
