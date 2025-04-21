@@ -27,6 +27,7 @@ const banned = [
   "degen.game",
   "ipfs-search.com",
   "alps.finance",
+  "primordiumdao.xyz",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
