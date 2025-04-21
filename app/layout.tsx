@@ -13,15 +13,7 @@ export const metadata: Metadata = {
     default: "4oss",
     template: "%s | 4oss",
   },
-  description: "Discover cool websites leveraging blockchain technology.",
-  openGraph: {
-    title: "4oss",
-    description: "Discover cool websites leveraging blockchain technology.",
-    url: baseUrl,
-    siteName: "4oss",
-    locale: "en_US",
-    type: "website",
-  },
+  description: "Explore Open Source Software one click at a time",
   robots: {
     index: true,
     follow: true,
