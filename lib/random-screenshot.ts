@@ -20,6 +20,9 @@ const banned = [
   "t.me_",
   "colledge.social",
   "volume.li",
+  "moonbase.app",
+  "nftearth.exchange",
+  "ezkalibur",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
@@ -101,14 +104,22 @@ export async function fetchRandomScreenshot(
   /* 1. Ensure the big list is loaded (cold‑start). */
   await BAG_PROMISE[deviceType];
 
-  /* 2. Pop one URL; reshuffle when bag is empty.   */
-  if (bags[deviceType].length === 0) {
-    shuffle(bags[deviceType]); // Re‑mix the exhausted bag.
-  }
-  const blobUrl = bags[deviceType].pop()!; // Guaranteed by initial load.
+  /* 2. Try up to 10 times (reshuffling if bag empties) until we get a non-null `info`. */
+  let project: Project;
+  for (let attempt = 0; attempt < 10; attempt++) {
+    if (bags[deviceType].length === 0) {
+      shuffle(bags[deviceType]);
+    }
+    const blobUrl = bags[deviceType].pop()!; // should always exist after loadAll
+    const info = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
+    project = { src: blobUrl, info };
 
-  /* 3. Map to project.                             */
-  const info = PROJECT_MAP[slugFromBlob(blobUrl)] ?? null;
-  const project = { src: blobUrl, info };
-  return project;
+    if (info !== null) {
+      return project;
+    }
+    // Otherwise loop around and try again.
+  }
+
+  // After 10 failed attempts, return whatever we ended up with.
+  return project!;
 }

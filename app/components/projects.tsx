@@ -4,6 +4,7 @@ import * as React from "react";
 import { Card } from "./card";
 import { GalaxyIcon } from "./icons";
 import { DeviceType, Project } from "lib/types";
+import { toast } from "sonner";
 
 interface ProjectsProps {
   deviceType: DeviceType;
@@ -47,6 +48,21 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
       setProject(project);
     } catch (err) {
       console.error("Failed to load random screenshot:", err);
+      toast.error(
+        <p>
+          Failed to load screenshot. <br />
+          Please try again or contact
+          <a
+            href="https://x.com/alexfertel"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline text-zinc-600"
+          >
+            &thinsp;@alexfertel&thinsp;
+          </a>
+          on Twitter.
+        </p>,
+      );
     } finally {
       toggleLoading();
     }
@@ -56,19 +72,19 @@ export function Projects({ deviceType, initialProject = null }: ProjectsProps) {
     <React.Fragment>
       {/* Screenshot Container */}
       {viewableProject !== null && (
-        <Card className="bg-transparent">
+        <Card className="relative bg-transparent">
           <a
             href={viewableProject.info?.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="sm:p-4 flex justify-center items-center group"
+            className="sm:p-4 flex justify-center items-center cursor-alias"
           >
             <img
               src={viewableProject.src}
               alt={viewableProject.info?.title ?? "Random website screenshot"}
               width={deviceType === "desktop" ? 600 : 300}
               height={deviceType === "desktop" ? 400 : 700}
-              className="max-w-full h-auto transition duration-200 ease-in-out filter group-hover:blur-[1px]"
+              className="max-w-full h-auto"
             />
           </a>
         </Card>

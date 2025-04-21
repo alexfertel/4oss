@@ -6,6 +6,7 @@ import Footer from "./components/footer";
 import { baseUrl } from "./sitemap";
 import clsx from "clsx";
 import { mono, sans } from "./_fonts";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -46,6 +47,13 @@ export default function RootLayout({
         </main>
         <div className="z-0 absolute inset-0 bg-[url(/triangle-gradient-mobile.avif)] md:bg-[url(/triangle-gradient-desktop.avif)] bg-cover bg-center bg-no-repeat" />
         <div className="z-10 absolute inset-0 background-pattern" />
+        <Toaster
+          position="top-center"
+          closeButton
+          toastOptions={{
+            duration: 60000,
+          }}
+        />
       </body>
     </html>
   );
