@@ -46,13 +46,13 @@ export default function RootLayout({
       className={clsx("text-black", sans.variable, mono.variable)}
     >
       <body className="relative antialiased flex flex-col flex-1">
-        <main className="z-20 flex flex-col flex-1 items-center justify-between">
+        <main className="relative z-20 flex flex-col flex-1 items-center justify-between">
           {children}
           <Footer />
           <Analytics />
           <SpeedInsights />
         </main>
-        <div className="z-0 absolute inset-0 bg-[url(../public/triangle-gradient-mobile.avif)] md:bg-[url(../public/triangle-gradient-desktop.avif)] bg-cover bg-center bg-no-repeat" />
+        <div className="z-0 absolute inset-0 bg-[url(/triangle-gradient-mobile.avif)] md:bg-[url(/triangle-gradient-desktop.avif)] bg-cover bg-center bg-no-repeat" />
         <div className="z-10 absolute inset-0 background-pattern" />
       </body>
     </html>

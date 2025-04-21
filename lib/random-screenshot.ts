@@ -18,6 +18,7 @@ const banned = [
   "lumosdao",
   "spreadsheet",
   "t.me_",
+  "colledge.social",
 ];
 
 const PROJECT_MAP: Record<string, ProjectInfo> = (() => {
